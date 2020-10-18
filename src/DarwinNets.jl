@@ -32,7 +32,7 @@ function add_layer(neuralNet, layer)
         layerBelow = length(neuralNet.layers) - 1
         d1 = length(layer.values)
         d2 = length(neuralNet.layers[layerBelow].values)
-        neuralNet.layers[layerBelow].weights = rand(d1, d2)
+        neuralNet.layers[layerBelow].weights = rand(d2, d1)
     end
 end
 
@@ -41,8 +41,12 @@ function new_layer(values; activation = relu)
 end
 
 function feed_forward(neuralNet)
-    for layer in 0:length(neuralNet)
-        print(layer)
+    for i in 1:length(neuralNet.layers)-1
+        for j in 1:length(neuralNet.layers[i + 1].values)
+            weights = neuralNet.layers[i].weights[:, j]
+            values = neuralNet.layers[i].values
+            neuralNet.layers[i+1].values[j] = neuralNet.layers[i].activation(sum(weights .* values))
+        end
     end
 end
 
