@@ -14,8 +14,10 @@ second_layer = new_layer(zeros(3); activation = sin)
 
 add_layer(network, first_layer)
 add_layer(network, second_layer)
+add_layer(network, new_layer(zeros(1)))
 
 println(network)
 
 feed_forward(network)
 println(network)
+pprint(network)
