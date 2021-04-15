@@ -29,7 +29,7 @@ mutable struct Layer
     growth_rate::Array{Float64,2}
 end
 
-struct NeuralNet
+mutable struct NeuralNet
     layers::Array{Layer,1}
     bias::Array{Float64,1}
 end
@@ -44,7 +44,6 @@ end
 
 function add_layer(neuralNet, layer)
     push!(neuralNet.layers, layer)
-    println(layer.direction)
     if length(neuralNet.layers) > 1
         # now add weights to layer below
         layerBelow = length(neuralNet.layers) - 1
@@ -62,6 +61,8 @@ function add_layer(neuralNet, layer)
         end
         layer.direction = direction
         layer.growth_rate = growth_rate
+    else
+        neuralNet.bias = ones(length(layer.values))
     end
 end
 
@@ -75,6 +76,9 @@ function feed_forward(neuralNet)
         for j in 1:length(neuralNet.layers[i + 1].values)
             weights = neuralNet.layers[i].weights[:, j]
             values = neuralNet.layers[i].values
+            if i == 1
+                values = values + neuralNet.bias
+            end
             neuralNet.layers[i+1].values[j] = activation(sum(weights .* values))
         end
     end
@@ -91,6 +95,5 @@ end
 function mutate(NeuralNet)
 
 end
-
 
 end # module
