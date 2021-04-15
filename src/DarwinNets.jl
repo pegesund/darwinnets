@@ -7,19 +7,21 @@ module DarwinNets
 # using ActivationFunctions
 
 include("activation_functions.jl")
+using Parameters
 
-const growth_rate_default = 0.01
-# increase rate in heritage
-const chance_growth_rate_increase = 10
-# chances for a mutation in a single cell, measured in 100000 th
-const chance_singe_cell_mutation = 10
-# chances for changes in activation function in layer, in 100000 th
-const chance_activation_function = 5
-# layer changes
-const chance_add_layer = 8
-const chance_delete_layer = 1
-const change_increate_layer = 1
-const change_decrease_layer = 1
+
+@with_kw struct NeuralNetSettings
+    growth_rate_default::Float64 = 0.01
+    chance_growth_rate_increase::Integer = 10 # increase rate in heritage
+    chance_singe_cell_mutation::Integer = 10 # chances for changes in activation function in layer, in 100000 th
+    chance_activation_function::Integer = 10
+    chance_add_layer::Integer = 8
+    chance_delete_layer::Integer = 8    
+    change_decrease_layer::Integer = 1
+    change_increase_layer::Integer = 1
+end
+
+
 
 mutable struct Layer
     weights::Array{Float64,2}
@@ -32,10 +34,11 @@ end
 mutable struct NeuralNet
     layers::Array{Layer,1}
     bias::Array{Float64,1}
+    params::NeuralNetSettings
 end
 
 function create_neuralnet()
-    neuralNet = NeuralNet(Layer[], Float64[])
+    neuralNet = NeuralNet(Layer[], Float64[],NeuralNetSettings())
 end
 
 function print_all()
@@ -57,7 +60,7 @@ function add_layer(neuralNet, layer)
         growth_rate = zeros(d2, d1)
         for i in eachindex(direction)
             direction[i] = rand(-1:1)
-            growth_rate[i] = growth_rate_default
+            growth_rate[i] = neuralNet.params.growth_rate_default
         end
         layer.direction = direction
         layer.growth_rate = growth_rate
