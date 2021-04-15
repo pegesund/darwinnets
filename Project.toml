@@ -4,6 +4,7 @@ authors = ["pegesund <petter.egesund@gmail.com>"]
 version = "0.1.0"
 
 [deps]
+MLDatasets = "eb30cadb-4394-5ae3-aed4-317e484a6458"
 PrettyPrint = "8162dcfd-2161-5ef2-ae6c-7681170c5f98"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"

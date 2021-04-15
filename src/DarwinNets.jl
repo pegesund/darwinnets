@@ -2,12 +2,24 @@ module DarwinNets
 
 # using Reviste
 
+# train_x, train_y = MNIST.traindata()
+
 # using ActivationFunctions
 
 include("activation_functions.jl")
 
 const growth_rate_default = 0.01
-const growth_rate_increase = 10
+# increase rate in heritage
+const chance_growth_rate_increase = 10
+# chances for a mutation in a single cell, measured in 100000 th
+const chance_singe_cell_mutation = 10
+# chances for changes in activation function in layer, in 100000 th
+const chance_activation_function = 5
+# layer changes
+const chance_add_layer = 8
+const chance_delete_layer = 1
+const change_increate_layer = 1
+const change_decrease_layer = 1
 
 mutable struct Layer
     weights::Array{Float64,2}
@@ -32,12 +44,14 @@ end
 
 function add_layer(neuralNet, layer)
     push!(neuralNet.layers, layer)
+    println(layer.direction)
     if length(neuralNet.layers) > 1
         # now add weights to layer below
         layerBelow = length(neuralNet.layers) - 1
         d1 = length(layer.values)
         d2 = length(neuralNet.layers[layerBelow].values)
-        neuralNet.layers[layerBelow].weights = rand(d2, d1)
+        # neuralNet.layers[layerBelow].weights = rand(d2, d1)
+        neuralNet.layers[layerBelow].weights = ones(d2, d1)
 
         # add direction and growth rate
         direction = zeros(d2, d1)
@@ -46,7 +60,8 @@ function add_layer(neuralNet, layer)
             direction[i] = rand(-1:1)
             growth_rate[i] = growth_rate_default
         end
-
+        layer.direction = direction
+        layer.growth_rate = growth_rate
     end
 end
 
@@ -56,12 +71,25 @@ end
 
 function feed_forward(neuralNet)
     for i in 1:length(neuralNet.layers)-1
+        activation = neuralNet.layers[i].activation
         for j in 1:length(neuralNet.layers[i + 1].values)
             weights = neuralNet.layers[i].weights[:, j]
             values = neuralNet.layers[i].values
-            neuralNet.layers[i+1].values[j] = neuralNet.layers[i].activation(sum(weights .* values))
+            neuralNet.layers[i+1].values[j] = activation(sum(weights .* values))
         end
     end
+end
+
+
+function softmax(neuralNet)
+    a = neuralNet.layers[length(neuralNet.layers)].values
+    c = maximum(a)
+    exp.(a .- c) / sum(exp.(a .- c))
+end
+
+
+function mutate(NeuralNet)
+
 end
 
 
