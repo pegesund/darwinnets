@@ -119,7 +119,11 @@ function evolute(neuralNetOriginal)
 
             # recalculate weights
             if recalculate_weights
-                layer.weights[j] *= layer.growth_rate[j] * layer.direction[j]
+                if layer.direction[j] == 1
+                    layer.weights[j] *= (1 + layer.growth_rate[j])
+                else
+                    layer.weights[j] /= (1 + layer.growth_rate[j])
+                end
             end
         end
     end
