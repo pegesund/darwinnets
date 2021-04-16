@@ -3,6 +3,8 @@ using Test
 using DarwinNets: Layer, create_neuralnet, NeuralNet, print_all, relu, add_layer, new_layer, feed_forward, softmax, evolute
 using PrettyPrint: pformat, pprint, pp_impl
 using PrettyPrint
+using BenchmarkTools
+
 
 
 @test true

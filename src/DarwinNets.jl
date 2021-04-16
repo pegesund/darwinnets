@@ -101,7 +101,7 @@ end
 
 function evolute(neuralNetOriginal)
     neuralNet = deepcopy(neuralNetOriginal)
-    for i in 2:length(neuralNet.layers)
+    for i in 1:length(neuralNet.layers) - 1
         layer = neuralNet.layers[i]
         for j in 1:length(layer.weights)
             # check if we should change growth rate
