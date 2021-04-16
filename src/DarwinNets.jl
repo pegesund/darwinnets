@@ -12,15 +12,15 @@ using Parameters
 
 @with_kw struct NeuralNetSettings
     growth_rate_default::Float64 = 0.01
-    chance_growth_rate_increase::Integer = 10 # increase rate in heritage
+    chance_growth_rate_increase::Integer = 3 # increase rate in heritage
+    chance_growth_rate_direction::Integer = 4 # chanses a growth rate should change direction
     chance_singe_cell_mutation::Integer = 10 # chances for changes in activation function in layer, in 100000 th
     chance_activation_function::Integer = 10
     chance_add_layer::Integer = 8
-    chance_delete_layer::Integer = 8    
+    chance_delete_layer::Integer = 8
     change_decrease_layer::Integer = 1
     change_increase_layer::Integer = 1
 end
-
 
 
 mutable struct Layer
@@ -59,11 +59,11 @@ function add_layer(neuralNet, layer)
         direction = zeros(d2, d1)
         growth_rate = zeros(d2, d1)
         for i in eachindex(direction)
-            direction[i] = rand(-1:1)
+            direction[i] = rand([-1,1])
             growth_rate[i] = neuralNet.params.growth_rate_default
         end
-        layer.direction = direction
-        layer.growth_rate = growth_rate
+        neuralNet.layers[layerBelow].direction = direction
+        neuralNet.layers[layerBelow].growth_rate = growth_rate
     else
         neuralNet.bias = ones(length(layer.values))
     end
@@ -80,7 +80,7 @@ function feed_forward(neuralNet)
             weights = neuralNet.layers[i].weights[:, j]
             values = neuralNet.layers[i].values
             if i == 1
-                values = values + neuralNet.bias
+                values = values .+ neuralNet.bias
             end
             neuralNet.layers[i+1].values[j] = activation(sum(weights .* values))
         end
@@ -95,8 +95,35 @@ function softmax(neuralNet)
 end
 
 
-function mutate(NeuralNet)
+function mutate(neuralNet)
 
+end
+
+function evolute(neuralNetOriginal)
+    neuralNet = deepcopy(neuralNetOriginal)
+    for i in 2:length(neuralNet.layers)
+        layer = neuralNet.layers[i]
+        for j in 1:length(layer.weights)
+            # check if we should change growth rate
+            recalculate_weights = false
+            if rand(1:neuralNet.params.chance_growth_rate_increase) == 1
+                    layer.growth_rate[j] *= rand(0:1) + rand()
+                    recalculate_weights = true
+            end
+
+            # maybe change direction
+            if rand(1:neuralNet.params.chance_growth_rate_direction) == 1
+                    layer.direction[j] = rand([-1,1])
+                    recalculate_weights = true
+            end
+
+            # recalculate weights
+            if recalculate_weights
+                layer.weights[j] *= layer.growth_rate[j] * layer.direction[j]
+            end
+        end
+    end
+    return neuralNet
 end
 
 end # module

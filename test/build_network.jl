@@ -1,11 +1,17 @@
 using Test
 
-using DarwinNets: Layer, create_neuralnet, NeuralNet, print_all, relu, add_layer, new_layer, feed_forward, softmax
-using PrettyPrint: pformat, pprint
-
+using DarwinNets: Layer, create_neuralnet, NeuralNet, print_all, relu, add_layer, new_layer, feed_forward, softmax, evolute
+using PrettyPrint: pformat, pprint, pp_impl
+using PrettyPrint
 
 
 @test true
+
+
+function PrettyPrint.pp_impl(io, m::Matrix{K}, indent)::Int where {K}
+    print(io, m)
+    return indent
+end
 
 network = create_neuralnet()
 
@@ -17,9 +23,11 @@ add_layer(network, second_layer)
 add_layer(network, new_layer(zeros(3); activation = identity))
 
 feed_forward(network)
+println()
 
 pprint(network)
-println()
-println(sum(softmax(network)))
 
-println("hupp")
+network2 = evolute(network)
+feed_forward(network2)
+
+pprint(network2)
