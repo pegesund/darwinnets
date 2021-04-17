@@ -3,6 +3,9 @@ module DarwinNets
 # using Reviste
 
 # train_x, train_y = MNIST.traindata()
+# convert(Array{Float64}, train_x[:, :, 1])
+# convert(Array{Float64}, train_x[:, :, :])
+# l.values = reshape(c[:, :, 1], 784)
 
 # using ActivationFunctions
 
@@ -25,7 +28,7 @@ end
 mutable struct Layer
     weights::Array{Float64,2}
     values::Array{Float64,1}
-    activation
+    activation::Function
     direction::Array{Float64,2}
     growth_rate::Array{Float64,2}
 end
