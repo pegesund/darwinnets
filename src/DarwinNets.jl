@@ -18,8 +18,8 @@ using Parameters
     chance_activation_function::Integer = 10
     chance_add_layer::Integer = 8
     chance_delete_layer::Integer = 8
-    change_decrease_layer::Integer = 1
-    change_increase_layer::Integer = 1
+    change_decrease_layer::Integer = 10
+    change_increase_layer::Integer = 10
 end
 
 
@@ -129,5 +129,45 @@ function evolute(neuralNetOriginal)
     end
     return neuralNet
 end
+
+function mutate(neuralNetOriginal)
+    network = create_neuralnet()
+    network.params = deepcopy(neuralNetOriginal.params)
+    for layer in neuralNetOriginal.layers
+        layerLength = length(layer.values)
+        addNumberLayer = 1
+        if rand(1:neuralNetOriginal.params.change_decrease_layer) == 1
+            layerLength +=  rand(1:10)
+        end
+        if rand(1:neuralNetOriginal.params.change_increase_layer) == 1
+            layerLength -= rand(1:10)
+        end
+        if rand(1:neuralNetOriginal.params.change_increase_layer) == 1
+            layerLength -= rand(1:10)
+        end
+
+        activation = layer.activation
+        if rand(1:neuralNetOriginal.params.chance_activation_function) == 1
+            activation = rnd(all_activation_functions)
+        end
+
+        if rand(1:neuralNetOriginal.params.chance_add_layer) == 1
+            addNumberLayer += 1
+        end
+
+        if rand(1:neuralNetOriginal.params.chance_delete_layer) == 1
+            addNumberLayer += 1
+        end
+
+        for i in 1:addNumberLayer
+            newLayer = new_layer(zeros(layerLength); activation = activation)
+            add_layer(network, newLayer)
+        end
+
+    end
+
+end
+
+
 
 end # module
