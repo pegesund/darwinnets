@@ -34,11 +34,12 @@ second_layer = new_layer(zeros(3); activation = relu)
 
 add_layer(network, first_layer)
 add_layer(network, second_layer)
-add_layer(network, new_layer(zeros(3); activation = identity))
+add_layer(network, new_layer(zeros(3); activation = relu))
 
 feed_forward(network)
 println()
 
-mutate(network)
+for i in 1:10000; mutate(network); end
+pprint(mutate(network))
 
 # @btime pprint(many_evolute(network))

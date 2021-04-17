@@ -138,9 +138,9 @@ function mutate(neuralNetOriginal)
     layer = first(neuralNetOriginal.layers)
     activation = layer.activation
     if rand(1:neuralNetOriginal.params.chance_activation_function) == 1
-        activation = rnd(all_activation_functions)
+        activation = rand(all_activation_functions)
     end
-    newLayer = new_layer(zeros(length(neuralNetOriginal.layers[1].weights)); activation = activation)
+    newLayer = new_layer(zeros(length(layer.values)); activation = activation)
     add_layer(network, newLayer)
 
 
@@ -173,11 +173,25 @@ function mutate(neuralNetOriginal)
         end
 
         for j in 1:addNumberLayer
-            newLayer = new_layer(zeros(layerLength); activation = activation)
-            add_layer(network, newLayer)
+            if layerLength > 2
+                newLayer = new_layer(zeros(layerLength); activation = activation)
+                add_layer(network, newLayer)
+            end
         end
 
     end
+
+    #last layer
+    #first layer
+    layer = last(neuralNetOriginal.layers)
+    activation = layer.activation
+    if rand(1:neuralNetOriginal.params.chance_activation_function) == 1
+        activation = rand(all_activation_functions)
+    end
+    newLayer = new_layer(zeros(length(layer.values)); activation = activation)
+    add_layer(network, newLayer)
+
+    return network
 
 end
 
