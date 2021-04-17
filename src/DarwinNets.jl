@@ -133,7 +133,20 @@ end
 function mutate(neuralNetOriginal)
     network = create_neuralnet()
     network.params = deepcopy(neuralNetOriginal.params)
-    for layer in neuralNetOriginal.layers
+
+    #first layer
+    layer = first(neuralNetOriginal.layers)
+    activation = layer.activation
+    if rand(1:neuralNetOriginal.params.chance_activation_function) == 1
+        activation = rnd(all_activation_functions)
+    end
+    newLayer = new_layer(zeros(length(neuralNetOriginal.layers[1].weights)); activation = activation)
+    add_layer(network, newLayer)
+
+
+    # middle layers
+    for i in 2:length(neuralNetOriginal.layers) - 1
+        layer = neuralNetOriginal.layers[i]
         layerLength = length(layer.values)
         addNumberLayer = 1
         if rand(1:neuralNetOriginal.params.change_decrease_layer) == 1
@@ -148,7 +161,7 @@ function mutate(neuralNetOriginal)
 
         activation = layer.activation
         if rand(1:neuralNetOriginal.params.chance_activation_function) == 1
-            activation = rnd(all_activation_functions)
+            activation = rand(all_activation_functions)
         end
 
         if rand(1:neuralNetOriginal.params.chance_add_layer) == 1
@@ -159,7 +172,7 @@ function mutate(neuralNetOriginal)
             addNumberLayer += 1
         end
 
-        for i in 1:addNumberLayer
+        for j in 1:addNumberLayer
             newLayer = new_layer(zeros(layerLength); activation = activation)
             add_layer(network, newLayer)
         end
