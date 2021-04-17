@@ -22,7 +22,6 @@ using Parameters
     change_increase_layer::Integer = 10
 end
 
-
 mutable struct Layer
     weights::Array{Float64,2}
     values::Array{Float64,1}
@@ -31,14 +30,25 @@ mutable struct Layer
     growth_rate::Array{Float64,2}
 end
 
+
+
+@with_kw mutable struct Stats
+    score::Float64 = 100
+    generations::Int = 0
+end
+
+
 mutable struct NeuralNet
     layers::Array{Layer,1}
     bias::Array{Float64,1}
     params::NeuralNetSettings
+    stats::Stats
 end
 
+
+
 function create_neuralnet()
-    neuralNet = NeuralNet(Layer[], Float64[],NeuralNetSettings())
+    neuralNet = NeuralNet(Layer[], Float64[],NeuralNetSettings(), Stats())
 end
 
 function print_all()
@@ -131,6 +141,7 @@ function evolute(neuralNetOriginal)
 end
 
 function mutate(neuralNetOriginal)
+
     network = create_neuralnet()
     network.params = deepcopy(neuralNetOriginal.params)
 
@@ -182,7 +193,6 @@ function mutate(neuralNetOriginal)
     end
 
     #last layer
-    #first layer
     layer = last(neuralNetOriginal.layers)
     activation = layer.activation
     if rand(1:neuralNetOriginal.params.chance_activation_function) == 1
