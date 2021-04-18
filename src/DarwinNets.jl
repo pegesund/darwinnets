@@ -9,44 +9,11 @@ module DarwinNets
 
 # using ActivationFunctions
 
+using MLDatasets
+
 include("activation_functions.jl")
 using Parameters
 include("structures.jl")
-
-@with_kw struct NeuralNetSettings
-    growth_rate_default::Float64 = 0.01
-    chance_growth_rate_increase::Integer = 3 # increase rate in heritage
-    chance_growth_rate_direction::Integer = 4 # chanses a growth rate should change direction
-    chance_singe_cell_mutation::Integer = 10 # chances for changes in activation function in layer, in 100000 th
-    chance_activation_function::Integer = 10
-    chance_add_layer::Integer = 8
-    chance_delete_layer::Integer = 8
-    change_decrease_layer::Integer = 10
-    change_increase_layer::Integer = 10
-end
-
-mutable struct Layer
-    weights::Array{Float64,2}
-    values::Array{Float64,1}
-    activation::Function
-    direction::Array{Float64,2}
-    growth_rate::Array{Float64,2}
-end
-
-
-
-@with_kw mutable struct Stats
-    score::Float64 = 100
-    generations::Int = 0
-end
-
-
-mutable struct NeuralNet
-    layers::Array{Layer,1}
-    bias::Array{Float64,1}
-    params::NeuralNetSettings
-    stats::Stats
-end
 
 
 
@@ -86,7 +53,8 @@ function new_layer(values; activation = relu)
     Layer(Array{Float64}(undef, 0, 2), values, activation, Array{Float64}(undef, 0, 2), Array{Float64}(undef, 0, 2))
 end
 
-function feed_forward(neuralNet)
+function feed_forward(neuralNet, values)
+    first(neuralNet.layers).values = values
     for i in 1:length(neuralNet.layers)-1
         activation = neuralNet.layers[i].activation
         for j in 1:length(neuralNet.layers[i + 1].values)
@@ -108,13 +76,8 @@ function softmax(neuralNet)
 end
 
 
-function mutate(neuralNet)
-
-end
-
 function evolute(neuralNetOriginal)
     neuralNet = deepcopy(neuralNetOriginal)
-    
     
     for i in 1:length(neuralNet.layers) - 1
         layer = neuralNet.layers[i]
@@ -210,6 +173,21 @@ function mutate(neuralNetOriginal)
 
 end
 
+function readMnist()
+    dataset_x = []
+    train_x, train_y = MNIST.traindata()
+    c = convert(Array{Float64}, train_x[:, :, :])
+    for i in 1:60000
+        push!(dataset_x, reshape(c[:, :, i], 784))
+    end
+    dataset_y = convert(Array{Float64}, train_y)
+    return (dataset_x, dataset_y)
+end
 
+
+function runEcosystem()
+    allNets = []
+
+end
 
 end # module
