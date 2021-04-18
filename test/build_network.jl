@@ -3,7 +3,7 @@
 using Test
 using Distributed
 
-@everywhere using DarwinNets: Layer, create_neuralnet, NeuralNet, print_all, relu, add_layer, new_layer, feed_forward, softmax, evolute, mutate, readMnist
+@everywhere using DarwinNets: Layer, create_neuralnet, NeuralNet, relu, add_layer, new_layer, feed_forward, softmax, evolute, mutate, readMnist
 using PrettyPrint: pformat, pprint, pp_impl
 using PrettyPrint
 using BenchmarkTools
