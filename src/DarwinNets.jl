@@ -6,6 +6,7 @@ using MLDatasets
 using Parameters
 using Statistics
 using StatsBase
+using DataStructures
 
 
 include("activation_functions.jl")
@@ -158,15 +159,22 @@ function mutate(neuralNetOriginal)
 end
 
 
-function runEcosystem(eva::NeuralNet, dataset::DataSet, ecoSystem::EcoSystem)
-    allNets =  MutableBinaryMaxHeap{NeuralNet}()
-    datasetTrainLength = length(dataset.test_y)
-    for epoch in 1:ecoSystem.epochs
+function runBeforeKeep(network::NeuralNet, dataset::DataSet)
+    for i in 1:network.params.batch_run_before_keep
+        datasetTrainLength = length(dataset.test_y)
         for i in 1:trunc(Int, datasetTrainLength / ecoSystem.batch_size)
             batchIds = sample(1:datasetTrainLength, ecoSystem.batch_size, replace = false)
             batch = map(id -> dataset.test_x[id], batchIds)
         end
+    end    
+end
+
+function runEcosystem(eva::NeuralNet, dataset::DataSet, ecoSystem::EcoSystem)
+    allNets =  MutableBinaryMaxHeap{NeuralNet}()
+    newNets = foldl((a, o) -> push!(a, mutate(eva)), 1:9; init = [])
+    for epoch in 1:ecoSystem.epochs
     end
+    println(length(newNets))
 end
 
 end # module

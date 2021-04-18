@@ -44,7 +44,7 @@ end
     keep_number_of_children::Int = 3
     epochs::Int = 10
     batch_size::Int = 100 # use 0 for all
-    bath_run_before_keep::int = 10
+    batch_run_before_keep::Int = 10
 end
 
 isless(a::NeuralNet, b::NeuralNet) = isless(a.stats.score, b.stats.score)
