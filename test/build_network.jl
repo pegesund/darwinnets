@@ -14,7 +14,7 @@ using Serialization: serialize, deserialize
 @test true
 
 function many_evolute(nwork)
-    for i in 1:100000
+    for i in 1:1000
         nwork = evolute(nwork)
         feed_forward(nwork)
     end
@@ -43,3 +43,13 @@ for i in 1:10000; mutate(network); end
 pprint(mutate(network))
 
 # @btime pprint(many_evolute(network))
+
+networkLarge = create_neuralnet()
+
+
+add_layer(networkLarge, new_layer(zeros(28 * 28)))
+add_layer(networkLarge, new_layer(zeros(128)))
+add_layer(networkLarge, new_layer(zeros(128)))
+add_layer(networkLarge, new_layer(zeros(10)))
+
+@btime many_evolute(networkLarge)

@@ -11,7 +11,7 @@ module DarwinNets
 
 include("activation_functions.jl")
 using Parameters
-
+include("structures.jl")
 
 @with_kw struct NeuralNetSettings
     growth_rate_default::Float64 = 0.01
@@ -95,7 +95,7 @@ function feed_forward(neuralNet)
             if i == 1
                 values = values .+ neuralNet.bias
             end
-            neuralNet.layers[i+1].values[j] = activation(sum(weights .* values))
+           neuralNet.layers[i+1].values[j] = activation(sum(weights .* values))
         end
     end
 end
@@ -114,6 +114,8 @@ end
 
 function evolute(neuralNetOriginal)
     neuralNet = deepcopy(neuralNetOriginal)
+    
+    
     for i in 1:length(neuralNet.layers) - 1
         layer = neuralNet.layers[i]
         for j in 1:length(layer.weights)
@@ -133,9 +135,9 @@ function evolute(neuralNetOriginal)
             # recalculate weights
             if recalculate_weights
                 if layer.direction[j] == 1
-                    layer.weights[j] *= (1 + layer.growth_rate[j])
+                   layer.weights[j] *= (1 + layer.growth_rate[j])
                 else
-                    layer.weights[j] /= (1 + layer.growth_rate[j])
+                   layer.weights[j] /= (1 + layer.growth_rate[j])
                 end
             end
         end
