@@ -2,27 +2,16 @@ module DarwinNets
 
 # using Reviste
 
-# train_x, train_y = MNIST.traindata()
-# convert(Array{Float64}, train_x[:, :, 1])
-# convert(Array{Float64}, train_x[:, :, :])
-# l.values = reshape(c[:, :, 1], 784)
-
-# using ActivationFunctions
-
 using MLDatasets
+using Parameters
 
 include("activation_functions.jl")
-using Parameters
 include("structures.jl")
-
+include("score_functions.jl")
 
 
 function create_neuralnet()
     neuralNet = NeuralNet(Layer[], Float64[],NeuralNetSettings(), Stats())
-end
-
-function print_all()
-    println(all_activation_functions)
 end
 
 function add_layer(neuralNet, layer)
@@ -69,11 +58,6 @@ function feed_forward(neuralNet, values)
 end
 
 
-function softmax(neuralNet)
-    a = neuralNet.layers[length(neuralNet.layers)].values
-    c = maximum(a)
-    exp.(a .- c) / sum(exp.(a .- c))
-end
 
 
 function evolute(neuralNetOriginal)
@@ -181,12 +165,13 @@ function readMnist()
         push!(dataset_x, reshape(c[:, :, i], 784))
     end
     dataset_y = convert(Array{Float64}, train_y)
-    return (dataset_x, dataset_y)
+    return DataSet(dataset_x, dataset_y)
 end
 
 
-function runEcosystem()
+function runEcosystem(eva::NeuralNet, dataset::DataSet, ecoSystem::EcoSystem)
     allNets = []
+
 
 end
 

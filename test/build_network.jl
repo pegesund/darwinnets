@@ -40,4 +40,6 @@ add_layer(network, new_layer(zeros(10)))
 # @btime many_evolute(networkLarge)
 feed_forward(network, rand(28 * 28))
 
-readMnist()
+mnist = readMnist()
+
+print(typeof(mnist.test_x))
