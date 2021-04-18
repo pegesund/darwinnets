@@ -34,13 +34,17 @@ mutable struct NeuralNet
 end
 
 struct DataSet
+    train_x::Vector{Vector{Float64}}
+    train_y::Vector{Int}
     test_x::Vector{Vector{Float64}}
     test_y::Vector{Int}
 end
 
 @with_kw mutable struct EcoSystem
     keep_number_of_children::Int = 3
-    epochs = 10
-    batch_size =10
+    epochs::Int = 10
+    batch_size::Int = 100 # use 0 for all
+    bath_run_before_keep::int = 10
 end
 
+isless(a::NeuralNet, b::NeuralNet) = isless(a.stats.score, b.stats.score)

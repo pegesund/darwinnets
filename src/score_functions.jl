@@ -4,7 +4,7 @@ function softmax(neuralNet::NeuralNet)
     exp.(a .- c) / sum(exp.(a .- c))
 end
 
-function crossEntropy(neuralNet::NeuralNet, number::Int)
+function crossEntropyOneNumber(neuralNet::NeuralNet, number::Int)
     s = softmax(neuralNet)
     sSafe = s .+ 1e-8
     y = zeros(length(s))

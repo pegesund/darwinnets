@@ -5,6 +5,8 @@ module DarwinNets
 using MLDatasets
 using Parameters
 using Statistics
+using StatsBase
+
 
 include("activation_functions.jl")
 include("structures.jl")
@@ -23,7 +25,6 @@ function add_layer(neuralNet, layer)
         layerBelow = length(neuralNet.layers) - 1
         d1 = length(layer.values)
         d2 = length(neuralNet.layers[layerBelow].values)
-        # neuralNet.layers[layerBelow].weights = rand(d2, d1)
         neuralNet.layers[layerBelow].weights = ones(d2, d1)
 
         # add direction and growth rate
@@ -60,8 +61,6 @@ function feed_forward(neuralNet, values)
 end
 
 
-
-
 function evolute(neuralNetOriginal)
     neuralNet = deepcopy(neuralNetOriginal)
     
@@ -95,7 +94,6 @@ function evolute(neuralNetOriginal)
 end
 
 function mutate(neuralNetOriginal)
-
     network = create_neuralnet()
     network.params = deepcopy(neuralNetOriginal.params)
 
@@ -160,12 +158,15 @@ function mutate(neuralNetOriginal)
 end
 
 
-
-
 function runEcosystem(eva::NeuralNet, dataset::DataSet, ecoSystem::EcoSystem)
-    allNets = []
-
-
+    allNets =  MutableBinaryMaxHeap{NeuralNet}()
+    datasetTrainLength = length(dataset.test_y)
+    for epoch in 1:ecoSystem.epochs
+        for i in 1:trunc(Int, datasetTrainLength / ecoSystem.batch_size)
+            batchIds = sample(1:datasetTrainLength, ecoSystem.batch_size, replace = false)
+            batch = map(id -> dataset.test_x[id], batchIds)
+        end
+    end
 end
 
 end # module
