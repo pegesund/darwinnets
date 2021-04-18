@@ -35,12 +35,12 @@ end
 
 struct DataSet
     test_x::Vector{Vector{Float64}}
-    test_y::Vector{Float64}
+    test_y::Vector{Int}
 end
 
 @with_kw mutable struct EcoSystem
     keep_number_of_children::Int = 3
     epochs = 10
-    batch_size = 100
+    batch_size =10
 end
 

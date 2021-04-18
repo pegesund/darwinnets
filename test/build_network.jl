@@ -3,7 +3,7 @@
 using Test
 using Distributed
 
-@everywhere using DarwinNets: Layer, create_neuralnet, NeuralNet, relu, add_layer, new_layer, feed_forward, softmax, evolute, mutate, readMnist
+@everywhere using DarwinNets: Layer, create_neuralnet, NeuralNet, relu, add_layer, new_layer, feed_forward, softmax, evolute, mutate, readMnist, crossEntropy
 using PrettyPrint: pformat, pprint, pp_impl
 using PrettyPrint
 using BenchmarkTools
@@ -40,6 +40,9 @@ add_layer(network, new_layer(zeros(10)))
 # @btime many_evolute(networkLarge)
 feed_forward(network, rand(28 * 28))
 
-mnist = readMnist()
+m =readMnist()
 
-print(typeof(mnist.test_x))
+println(softmax(network))
+println(crossEntropy(network, 2))
+
+

@@ -4,6 +4,7 @@ module DarwinNets
 
 using MLDatasets
 using Parameters
+using Statistics
 
 include("activation_functions.jl")
 include("structures.jl")
