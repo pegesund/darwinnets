@@ -7,6 +7,7 @@ using Parameters
 using Statistics
 using StatsBase
 using DataStructures
+using PrettyPrint
 
 
 include("activation_functions.jl")
@@ -81,12 +82,16 @@ function evolute(neuralNetOriginal)
                     recalculate_weights = true
             end
 
+
             # recalculate weights
             if recalculate_weights
                 if layer.direction[j] == 1
                    layer.weights[j] *= (1 + layer.growth_rate[j])
                 else
                    layer.weights[j] /= (1 + layer.growth_rate[j])
+                end
+                if layer.weights[j] == 0
+                    println("Alarm..")
                 end
             end
         end
@@ -158,23 +163,64 @@ function mutate(neuralNetOriginal)
 
 end
 
-
-function runBeforeKeep(network::NeuralNet, dataset::DataSet)
-    for i in 1:network.params.batch_run_before_keep
-        datasetTrainLength = length(dataset.test_y)
-        for i in 1:trunc(Int, datasetTrainLength / ecoSystem.batch_size)
-            batchIds = sample(1:datasetTrainLength, ecoSystem.batch_size, replace = false)
-            batch = map(id -> dataset.test_x[id], batchIds)
+function totalScore(xv::Vector{Vector{Float64}}, yv::Vector{Int}, network::NeuralNet, ecosystem::EcoSystem)
+    failed = 0
+    correct = 0
+    for i in 1:length(yv)
+        feed_forward(network, xv[i])
+        selected = argmax(last(network.layers).values)
+        if selected == yv[i]
+            correct += 1
+        else
+            failed +=1
         end
-    end    
+    end
+    println("Results: ", correct, " - ", failed)
+    (correct, failed)
+end
+
+function scoreOne(xv::Vector{Vector{Float64}}, yv::Vector{Int}, network::NeuralNet, i::Int)
+    feed_forward(network, xv[i])
+    crossEntropyOneNumber(network, yv[i])
+end
+
+
+function runBeforeKeep(networkOrigin::NeuralNet, xv::Vector{Vector{Float64}},  yv::Vector{Int}, ecosystem::EcoSystem)
+    bestNetwork = networkOrigin
+    for i in 1:ecosystem.batch_run_before_keep 
+        batchIds = sample(1:length(yv), ecosystem.batch_size, replace = false)
+        evolution = evolute(bestNetwork)
+        for j in 1:rand(1:ecosystem.deep_mutations-1)
+            evolution = evolute(bestNetwork)
+        end    
+        score = mean(map(n -> scoreOne(xv, yv, evolution, n), batchIds))
+        if score < bestNetwork.stats.score
+            bestNetwork = evolution
+            bestNetwork.stats.score = score
+            println(score)
+        end
+    end  
+    bestNetwork  
 end
 
 function runEcosystem(eva::NeuralNet, dataset::DataSet, ecoSystem::EcoSystem)
-    allNets =  MutableBinaryMaxHeap{NeuralNet}()
+    allNets = MutableBinaryMaxHeap{NeuralNet}()
     newNets = foldl((a, o) -> push!(a, mutate(eva)), 1:9; init = [])
+    bestNetwork = eva
+    bestOk = 0
     for epoch in 1:ecoSystem.epochs
+        evolution = runBeforeKeep(bestNetwork, dataset.train_x, dataset.train_y, ecoSystem)
+        println("Epoch: ", evolution.stats.score)
+        println("Layer: ", softmax(bestNetwork))
+        if evolution.stats.score < bestNetwork.stats.score 
+            (scoreOk, scoreNok) = totalScore(dataset.test_x, dataset.test_y, evolution, ecoSystem)
+            if scoreOk > bestOk || true
+                bestNetwork = evolution
+                bestOk = scoreOk
+                println("Swapping: ", epoch, " - ", scoreOk, " and not: ", scoreNok)
+            end    
+        end    
     end
-    println(length(newNets))
 end
 
 end # module
