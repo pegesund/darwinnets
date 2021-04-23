@@ -35,7 +35,7 @@ network = create_neuralnet()
 
 
 add_layer(network, new_layer(zeros(28 * 28)))
-add_layer(network, new_layer(zeros(128); activation=tanh))
+add_layer(network, new_layer(zeros(128); activation=relu))
 add_layer(network, new_layer(zeros(10)))
 
 # @btime many_evolute(networkLarge)

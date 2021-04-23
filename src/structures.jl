@@ -1,7 +1,7 @@
 @with_kw struct NeuralNetSettings
     growth_rate_default::Float64 = 0.01
-    chance_growth_rate_increase::Integer = 200 # increase rate in heritage
-    chance_growth_rate_direction::Integer = 400 # chanses a growth rate should change direction
+    chance_growth_rate_increase::Integer = 5 # increase rate in heritage
+    chance_growth_rate_direction::Integer = 4 # chanses a growth rate should change direction
     chance_singe_cell_mutation::Integer = 200 # chances for changes in activation function in layer, in 100000 th
     chance_activation_function::Integer = 100
     chance_add_layer::Integer = 8
@@ -41,9 +41,9 @@ end
 @with_kw mutable struct EcoSystem
     keep_number_of_children::Int = 3
     epochs::Int = 100000
-    batch_size::Int = 30 # use 0 for all
-    batch_run_before_keep::Int = 200
-    deep_mutations = 50
+    batch_size::Int = 10 # use 0 for all
+    batch_run_before_keep::Int = 20
+    deep_mutations = 15
 end
 
 isless(a::NeuralNet, b::NeuralNet) = isless(a.stats.score, b.stats.score)

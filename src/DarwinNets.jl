@@ -27,7 +27,7 @@ function add_layer(neuralNet, layer)
         layerBelow = length(neuralNet.layers) - 1
         d1 = length(layer.values)
         d2 = length(neuralNet.layers[layerBelow].values)
-        neuralNet.layers[layerBelow].weights = ones(d2, d1)
+        neuralNet.layers[layerBelow].weights = rand(d2, d1)
 
         # add direction and growth rate
         direction = zeros(d2, d1)
@@ -181,7 +181,7 @@ end
 
 function scoreOne(xv::Vector{Vector{Float64}}, yv::Vector{Int}, network::NeuralNet, i::Int)
     feed_forward(network, xv[i])
-    crossEntropyOneNumber(network, yv[i])
+    adaptedRmse(network, yv[i])
 end
 
 
@@ -191,8 +191,9 @@ function runBeforeKeep(networkOrigin::NeuralNet, xv::Vector{Vector{Float64}},  y
         batchIds = sample(1:length(yv), ecosystem.batch_size, replace = false)
         evolution = evolute(bestNetwork)
         for j in 1:rand(1:ecosystem.deep_mutations-1)
-            evolution = evolute(bestNetwork)
-        end    
+            evolution = evolute(evolution)
+        end   
+        # println("Score: ", evolution.layers[2].weights)
         score = mean(map(n -> scoreOne(xv, yv, evolution, n), batchIds))
         if score < bestNetwork.stats.score
             bestNetwork = evolution
@@ -211,7 +212,7 @@ function runEcosystem(eva::NeuralNet, dataset::DataSet, ecoSystem::EcoSystem)
     for epoch in 1:ecoSystem.epochs
         evolution = runBeforeKeep(bestNetwork, dataset.train_x, dataset.train_y, ecoSystem)
         println("Epoch: ", evolution.stats.score)
-        println("Layer: ", softmax(bestNetwork))
+        println("Layer: ", last(bestNetwork.layers).values)
         if evolution.stats.score < bestNetwork.stats.score 
             (scoreOk, scoreNok) = totalScore(dataset.test_x, dataset.test_y, evolution, ecoSystem)
             if scoreOk > bestOk || true

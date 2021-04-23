@@ -17,3 +17,19 @@ function mySoftMax(a::Array{Float64})
     exp.(a .- c) / sum(exp.(a .- c))    
 end
 
+function adaptedRmse(neuralNet::NeuralNet, number::Int)
+    predictions = last(neuralNet.layers).values
+    loss = 0.0
+    for i in 1:length(predictions)
+        loss += if i == number
+            if predictions[i] < 0
+                -predictions[i]
+            else
+                predictions[i]
+            end    
+        else
+            abs(0 - predictions[i]) 
+        end 
+    end
+    loss / length(predictions)
+end
